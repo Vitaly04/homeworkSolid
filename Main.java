@@ -4,7 +4,9 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Buyer buyer = new Buyer("Артем", 150);
+        Buy productBuy = new ProductBuy();
+        Refund refund = new ProductRefund();
+        Buyer buyer = new Buyer("Артем", 150, productBuy, refund);
         Product[] productArray = {new Product("колбаса докторская", "50", "колбаса", "завод", "5"),
                 new Product("колбаса молочная", "70", "колбаса","фабрика", "7"),
                 new Product("колбаса венская", "70", "колбаса","цех", "9"),
@@ -43,7 +45,7 @@ public class Main {
         System.out.println("Введите значение для фильтрации: ");
         scanner.nextLine();
         String valueFilter = scanner.nextLine();
-        Filter filter = new ProductFilter(productArray, filterCategory, valueFilter); // Здесь выполнен принцип инверсии зависимостей, в дальнейшем есть возможность поменять на другой класс интерфейса Filter
+        Filter filter = new ProductFilter(productArray, filterCategory, valueFilter);
         PrintFilter printFilter = new PrintFilter();
         printFilter.printFilter(filter);
     }
@@ -54,7 +56,7 @@ public class Main {
         String name = scanner.nextLine();
         for (Product product : productArray) {
            if (name.equals(product.getName()) && buyer.getCash() - Integer.parseInt(product.getPrice()) > 0) {
-               if (buyer.buy(product)) {
+               if (buyer.buyProduct(product)) {
                    System.out.println("корзина покупателя полная");
                }
             }
@@ -64,8 +66,8 @@ public class Main {
     private static void refundProduct(Buyer buyer) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите название товара который необходимо вернуть: ");
-        String name = scanner.nextLine();
-        if (buyer.refund(name)) {
+        String nameProduct = scanner.nextLine();
+        if (buyer.refundProduct(nameProduct)) {
             System.out.println("Товар отсуствует");
         }
     }

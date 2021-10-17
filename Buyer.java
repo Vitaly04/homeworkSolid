@@ -1,12 +1,14 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class Buyer implements Buy, Refund {//здесь выполнен принцип сегрегации (разделения) интерфейса, на интерфейсы Buy и Refund
+public class Buyer {
     private String name;
     private int cash;
     private final int BASKET = 3; // здесь выполнен подход по избеганию магических чисел
     private List<Product> groceryBasket;
+    private Buy buy;
+    private Refund refund;
+
 
     public int getCash() {
         return cash;
@@ -16,34 +18,20 @@ public class Buyer implements Buy, Refund {//здесь выполнен при�
         return groceryBasket;
     }
 
-    public Buyer(String name, int cash) {
+    public Buyer(String name, int cash, Buy buy, Refund refund) { // Здесь выполнен принцип инверсии зависимостей, класс зависит от абстракций, а не от конкретной реализации
         this.name = name;
         this.cash = cash;
         this.groceryBasket = new ArrayList<>();
+        this.buy = buy;
+        this.refund = refund;
 
     }
 
-    @Override
-    public boolean buy(Product product) {
-        if (groceryBasket.size() < BASKET) {
-            cash -= Integer.parseInt(product.getPrice());
-            groceryBasket.add(product);
-            return false;
-        }
-        return true;
+    public boolean buyProduct (Product product) {
+        return buy.buy(product, cash,  BASKET, groceryBasket);
     }
 
-    @Override
-    public boolean refund(String name) {
-        Iterator<Product> productIterator = groceryBasket.iterator();
-        while(productIterator.hasNext()) {
-            Product nextProduct = productIterator.next();
-            if (nextProduct.getName().equals(name)) {
-                cash += Integer.parseInt(nextProduct.getPrice());
-                productIterator.remove();
-                return false;
-            }
-        }
-        return true;
+    public boolean refundProduct(String nameProduct) {
+        return refund.refund(nameProduct, groceryBasket, cash);
     }
 }
